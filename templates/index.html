@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acne Type Detector</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4 text-center">Acne Type Detection System</h2>
+        <p class="text-center text-muted">Upload a clear, close-up image of your skin (JPEG format) for better results.</p>
+        <p class="text-center text-muted">Note: This tool is for educational purposes only. Consult a dermatologist for professional advice.</p>
+        <form id="imageUploadForm" class="card p-4 shadow">
+            <div class="form-group">
+                <label for="imageInput">Upload your skin image (JPEG only)</label>
+                <input type="file" class="form-control-file" id="imageInput" required onchange="previewImage();">
+                <img id="preview" src="#" alt="Image Preview" class="img-thumbnail mt-3" style="display: none;"/>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Analyze Image</button>
+        </form>
+        <div id="results" class="mt-5">
+            <div id="acneType" class="alert alert-info" role="alert" style="display:none;"></div>
+            <div id="recommendations" class="alert alert-success" role="alert" style="display:none;"></div>
+        </div>
+        <div class="mt-5">
+            <h4 class="text-center">How It Works</h4>
+            <p class="text-center text-muted">This tool uses a trained machine learning model to detect the type of acne from the uploaded image. It supports detection of three types: acne comedonica, acne conglobata, and acne papulopustulosa. The detected type is provided along with product recommendations.</p>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
+
