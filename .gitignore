@@ -1,7 +1,13 @@
-__pycache__/
+# Ignore virtual environment
+venv/
 *.pyc
-.env
-.DS_Store
-.vscode/
-*.pth
-.idea/
+__pycache__/
+
+# Ignore large library files
+*.dylib
+*.so
+*.dll
+
+# Ignore TensorFlow or PyTorch binaries
+tensorflow/
+torch/
