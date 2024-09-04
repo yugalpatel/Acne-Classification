@@ -18,7 +18,7 @@ model.eval()
 
 def preprocess_image(image):
     transform = transforms.Compose([
-        transforms.Resize((640, 640)),
+        transforms.Resize((256, 256)),  # Resize to 256x256 to reduce processing time
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
