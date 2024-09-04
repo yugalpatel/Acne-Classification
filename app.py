@@ -1,3 +1,4 @@
+import os
 import time
 from flask import Flask, request, jsonify, render_template
 from PIL import Image
