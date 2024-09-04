@@ -1,13 +1,39 @@
-# Ignore virtual environment
-venv/
-*.pyc
+# Byte-compiled / optimized / DLL files
 __pycache__/
+*.py[cod]
+*$py.class
 
-# Ignore large library files
-*.dylib
-*.so
-*.dll
+# Virtual environment
+venv/
+env/
+*.venv
+*.env
 
-# Ignore TensorFlow or PyTorch binaries
-tensorflow/
-torch/
+# Python Package files
+*.egg
+*.egg-info/
+dist/
+build/
+*.wheel
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Flask-specific
+instance/
+*.log
+
+# PyTorch model checkpoints
+*.pth
+
+# Dataset directories or large files
+dataset/
+data/
+train/
+test/
+
+# Operating System files
+.DS_Store
+
+# Git specific files
+*.lock
