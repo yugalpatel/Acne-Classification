@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 # Load the model structure
 model = build_model()
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
 model = model.to(device)
 
 # Load the trained weights
