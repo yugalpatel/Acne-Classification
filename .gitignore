@@ -1,39 +1,6 @@
-# Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[cod]
-*$py.class
-
-# Virtual environment
-venv/
-env/
-*.venv
-*.env
-
-# Python Package files
-*.egg
-*.egg-info/
-dist/
-build/
-*.wheel
-
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints
-
-# Flask-specific
-instance/
+.env
 *.log
-
-# PyTorch model checkpoints
-*.pth
-
-# Dataset directories or large files
-dataset/
-data/
-train/
-test/
-
-# Operating System files
 .DS_Store
-
-# Git specific files
-*.lock
+dataset/
+venv/
