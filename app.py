@@ -1,12 +1,19 @@
 from model import load_model, transform_image, predict_acne_type, get_recommendations
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from PIL import Image
 import io
+import os
 import torch
 
 app = Flask(__name__)
 model = load_model()  # Load the trained model at the start
 
+# Root route to display a simple message
+@app.route('/')
+def home():
+    return "Welcome to the Acne Type Detector API. Use the /api/analyze endpoint to upload images."
+
+# Endpoint for analyzing the image
 @app.route('/api/analyze', methods=['POST'])
 def analyze_image():
     if 'image' not in request.files:
@@ -21,6 +28,8 @@ def analyze_image():
     return jsonify({'acneType': acne_type, 'recommendations': recommendations})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get('PORT', 5000))  # Use the port from the environment or default to 5000
+    app.run(debug=True, host='0.0.0.0', port=port)
+
 
 
