@@ -5,7 +5,7 @@ from PIL import Image
 
 # Function to build the model
 def build_model():
-    model = models.resnet50(pretrained=False)  # pretrained=False since you're loading your trained weights
+    model = models.resnet50(pretrained=False)  # We're not using pre-trained weights from ImageNet
     num_ftrs = model.fc.in_features
     model.fc = nn.Linear(num_ftrs, 3)  # 3 classes for acne types
     return model
@@ -19,31 +19,29 @@ def get_recommendations(acne_type):
     }
     return recommendations[acne_type]
 
-# Load pre-trained ResNet model
+# Load the trained model weights
 def load_model():
     model = build_model()
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = model.to(device)
-    model.load_state_dict(torch.load('acne_model.pth', map_location=device))  # Load trained model weights
+    model.load_state_dict(torch.load('acne_model.pth', map_location=torch.device('cpu')))  # Load weights on CPU
     model.eval()  # Set the model to evaluation mode
     return model
 
-# Preprocess image for model input
-def preprocess_image(image):
+# Transform the input image for model prediction
+def transform_image(image_bytes):
     transform = transforms.Compose([
-        transforms.Resize((640, 640)),
+        transforms.Resize((224, 224)),
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
-    image = transform(image).unsqueeze(0)  # Add batch dimension
-    return image
+    image = Image.open(image_bytes).convert('RGB')
+    return transform(image).unsqueeze(0)  # Add batch dimension
 
-# Predict the acne type
-def predict_acne_type(image, model):
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    image = image.to(device)
+# Predict the acne type from the image
+def predict_acne_type(model, image_tensor):
     with torch.no_grad():
-        output = model(image)
-        _, predicted_class = torch.max(output, 1)
-    return predicted_class.item()
+        outputs = model(image_tensor)
+        _, predicted_class = torch.max(outputs, 1)
+    acne_types = ['acne_comedonica', 'acne_conglobata', 'acne_papulopistulosa']
+    return acne_types[predicted_class.item()]
+
 
