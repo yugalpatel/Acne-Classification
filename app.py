@@ -6,13 +6,12 @@ import torch
 import torchvision.transforms as transforms
 from model import build_model, get_recommendations
 from celery_config import make_celery
+from multiprocessing import Process
+import subprocess
 
-# Initialize Flask and Celery
 app = Flask(__name__)
-app.config.update(
-    CELERY_BROKER_URL='redis://localhost:6379/0',
-    CELERY_RESULT_BACKEND='redis://localhost:6379/0'
-)
+
+# Set up Celery
 celery = make_celery(app)
 
 # Load the model structure
@@ -37,12 +36,20 @@ def preprocess_image(image):
 def home():
     return render_template('index.html')
 
-# Define the Celery task for image analysis
-@celery.task(name="app.analyze_image_task")
-def analyze_image_task(image_data):
-    image = Image.open(io.BytesIO(image_data)).convert('RGB')
+@app.route('/api/analyze', methods=['POST'])
+def analyze_image():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image provided'}), 400
+
+    image_file = request.files['image']
+    image = Image.open(io.BytesIO(image_file.read())).convert('RGB')
     image = preprocess_image(image)
 
+    task = analyze_image_task.apply_async(args=[image])
+    return jsonify({'task_id': task.id})
+
+@celery.task(name='app.analyze_image_task')
+def analyze_image_task(image):
     with torch.no_grad():
         predictions = model(image)
         acne_type_index = predictions.argmax(dim=1).item()
@@ -52,41 +59,27 @@ def analyze_image_task(image_data):
 
     return {'acneType': acne_type, 'recommendations': recommendations}
 
-@app.route('/api/analyze', methods=['POST'])
-def analyze_image():
-    if 'image' not in request.files:
-        return jsonify({'error': 'No image provided'}), 400
-
-    image_file = request.files['image']
-    image_data = image_file.read()
-
-    # Queue the task in Celery
-    task = analyze_image_task.delay(image_data)
-
-    return jsonify({'task_id': task.id})
-
 @app.route('/api/task_status/<task_id>')
 def task_status(task_id):
     task = analyze_image_task.AsyncResult(task_id)
-
     if task.state == 'PENDING':
-        response = {
-            'state': task.state,
-            'status': 'Pending...'
-        }
+        response = {'state': task.state}
     elif task.state != 'FAILURE':
         response = {
             'state': task.state,
             'result': task.result
         }
     else:
-        response = {
-            'state': task.state,
-            'status': str(task.info)  # Exception message
-        }
+        response = {'state': task.state, 'error': str(task.info)}
     return jsonify(response)
 
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))  
-    app.run(debug=True, host='0.0.0.0', port=port)
+def run_celery():
+    # This will run celery worker in the background within the same web service
+    subprocess.Popen(['celery', '-A', 'app.celery', 'worker', '--loglevel=info'])
 
+if __name__ == '__main__':
+    # Start both Flask and Celery worker
+    celery_process = Process(target=run_celery)
+    celery_process.start()
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+    celery_process.join()
