@@ -46,35 +46,6 @@ def get_recommendations(acne_type):
     
     return recommendations.get(acne_type, {'error': 'Acne type not found'})
 
-# Load pre-trained ResNet model
-model = build_model()
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-model = model.to(device)
-
-# Define loss function and optimizer
-criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)  # Make sure learning_rate is defined as a variable or passed in
-
-# Train the model
-def train_model(model, train_loader, criterion, optimizer, num_epochs):
-    for epoch in range(num_epochs):
-        model.train()
-        running_loss = 0.0
-        for inputs, labels in train_loader:
-            inputs, labels = inputs.to(device), labels.to(device)
-
-            optimizer.zero_grad()
-
-            outputs = model(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
-
-            running_loss += loss.item() * inputs.size(0)
-
-        epoch_loss = running_loss / len(train_loader.dataset)
-        print(f'Epoch {epoch}/{num_epochs-1}, Loss: {epoch_loss:.4f}')
-
 # Load the trained model weights
 def load_model():
     model = build_model()
@@ -100,28 +71,8 @@ def predict_acne_type(model, image_tensor):
     acne_types = ['acne_comedonica', 'acne_conglobata', 'acne_papulopistulosa']
     return acne_types[predicted_class.item()]
 
-# Evaluate the model
-def evaluate_model(model, test_loader):
-    model.eval()
-    all_preds = []
-    all_labels = []
-    with torch.no_grad():
-        for inputs, labels in test_loader:
-            inputs, labels = inputs.to(device), labels.to(device)
-            outputs = model(inputs)
-            _, preds = torch.max(outputs, 1)
-            all_preds.extend(preds.cpu().numpy())
-            all_labels.extend(labels.cpu().numpy())
-
-    accuracy = sum([1 for p, l in zip(all_preds, all_labels) if p == l]) / len(all_labels)
-    print(f'Test Accuracy: {accuracy * 100:.2f}%')
-
-# Main function
+# Main function for running model inference
 if __name__ == "__main__":
-    # Assume that `train_loader` and `test_loader` are defined
-    # Assume that `num_epochs` is defined
-    trained_model = train_model(model, train_loader, criterion, optimizer, num_epochs)
-    evaluate_model(trained_model, test_loader)
-    # Save the trained model
-    torch.save(trained_model.state_dict(), 'acne_model.pth')
+    model = load_model()  # Load the model
+
 
