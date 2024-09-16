@@ -53,7 +53,7 @@ model = model.to(device)
 
 # Define loss function and optimizer
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)  # Make sure learning_rate is defined as a variable or passed in
 
 # Train the model
 def train_model(model, train_loader, criterion, optimizer, num_epochs):
@@ -95,12 +95,17 @@ def transform_image(image_bytes):
 # Predict the acne type from the image
 def predict_acne_type(model, image_tensor):
     with torch.no_grad():
-
         outputs = model(image_tensor)
         _, predicted_class = torch.max(outputs, 1)
     acne_types = ['acne_comedonica', 'acne_conglobata', 'acne_papulopistulosa']
     return acne_types[predicted_class.item()]
 
+# Evaluate the model
+def evaluate_model(model, test_loader):
+    model.eval()
+    all_preds = []
+    all_labels = []
+    with torch.no_grad():
         for inputs, labels in test_loader:
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
@@ -108,12 +113,15 @@ def predict_acne_type(model, image_tensor):
             all_preds.extend(preds.cpu().numpy())
             all_labels.extend(labels.cpu().numpy())
 
-    accuracy = accuracy_score(all_labels, all_preds)
+    accuracy = sum([1 for p, l in zip(all_preds, all_labels) if p == l]) / len(all_labels)
     print(f'Test Accuracy: {accuracy * 100:.2f}%')
 
 # Main function
 if __name__ == "__main__":
+    # Assume that `train_loader` and `test_loader` are defined
+    # Assume that `num_epochs` is defined
     trained_model = train_model(model, train_loader, criterion, optimizer, num_epochs)
     evaluate_model(trained_model, test_loader)
     # Save the trained model
     torch.save(trained_model.state_dict(), 'acne_model.pth')
+
