@@ -45,8 +45,6 @@ def get_recommendations(acne_type):
     }
     
     return recommendations.get(acne_type, {'error': 'Acne type not found'})
-<<<<<<< HEAD
-=======
 
 # Load pre-trained ResNet model
 model = build_model()
@@ -76,7 +74,6 @@ def train_model(model, train_loader, criterion, optimizer, num_epochs):
 
         epoch_loss = running_loss / len(train_loader.dataset)
         print(f'Epoch {epoch}/{num_epochs-1}, Loss: {epoch_loss:.4f}')
->>>>>>> 66334eb4d6c045e89c081e583cdb86f980af42a0
 
 # Load the trained model weights
 def load_model():
@@ -98,12 +95,12 @@ def transform_image(image_bytes):
 # Predict the acne type from the image
 def predict_acne_type(model, image_tensor):
     with torch.no_grad():
-<<<<<<< HEAD
+
         outputs = model(image_tensor)
         _, predicted_class = torch.max(outputs, 1)
     acne_types = ['acne_comedonica', 'acne_conglobata', 'acne_papulopistulosa']
     return acne_types[predicted_class.item()]
-=======
+
         for inputs, labels in test_loader:
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
@@ -120,6 +117,3 @@ if __name__ == "__main__":
     evaluate_model(trained_model, test_loader)
     # Save the trained model
     torch.save(trained_model.state_dict(), 'acne_model.pth')
-
-
->>>>>>> 66334eb4d6c045e89c081e583cdb86f980af42a0
