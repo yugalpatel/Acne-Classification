@@ -110,9 +110,6 @@ To run the project with Celery for background task processing, you'll need Redis
 
    Use the web interface to upload an image, and the model will classify the acne type and recommend appropriate ingredients.
 
-### Note
-
-If running on a remote server, make sure the necessary ports are open, and update the Flask app configuration accordingly.
 
 ## Technologies Used
 
@@ -126,7 +123,6 @@ If running on a remote server, make sure the necessary ports are open, and updat
 
 ## Future Work
 
-- **Mobile Application Integration**: Implement this system in a mobile app for easier user access.
 - **Expand Dataset**: Increase the dataset size to improve accuracy.
 - **More Skin Conditions**: Extend the model to classify other skin conditions (e.g., eczema, rosacea).
 - **User Personalization**: Include a feature for users to receive personalized treatment plans.
