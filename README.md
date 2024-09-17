@@ -139,4 +139,4 @@ This project was made possible by the **[Acne Type Classification Dataset](https
   - Gaussian blur (0 to 0.25 pixels)
   - Salt and pepper noise (5% of pixels)
 
-Special thanks to the contributors of this dataset and the PyTorch community for supporting this project.
+Special thanks to the contributors of this dataset for supporting this project!
